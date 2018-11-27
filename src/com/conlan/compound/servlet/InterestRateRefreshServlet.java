@@ -20,6 +20,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO calculate this
 		long maxBlockTimestamp = 1543276800L;
 		long minBlockTimestamp = 1543104000L;
 		
@@ -38,29 +39,42 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		// only proceed if we successfully retrieved all asset rates
 		
 		StringBuilder message = new StringBuilder();
-		message.append("Rates (APR) as of block 6766843\n"); 
+
+		// track the latest block value amongst all the market history objects
+		long latestBlock = Long.MIN_VALUE;
 		
 		for (MarketHistoryObject marketHistory : histories) {
+			// check block number
+			long block = marketHistory.LatestBlockNumber();
+			if (block > latestBlock) {
+				latestBlock = block;
+			}
+			
+			// get token and symbol
 			Token token = marketHistory.GetToken();
 			
 			String symbol = TokenUtils.GetSymbol(token);
 			
+			// show symbol
 			message.append("$");
 			message.append(symbol);
 			message.append(", ");
 			
+			// show supply rate
 			float supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
 			
 			message.append("Supply ");			
 			message.append(supplyRate);
 			message.append("%");
 			
+			// show borrow rate
 			float borrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
 			
 			message.append(" - Borrow ");
 			message.append(borrowRate);
 			message.append("%");
 			
+			// add optional rate decoration
 			String tokenRateDecoration = TokenUtils.GetRateDecoration(supplyRate, borrowRate);
 			if (tokenRateDecoration != null) {
 				message.append(" ");
@@ -71,7 +85,10 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			if (marketHistory != histories.get(histories.size() - 1)) {
 				message.append("\n");
 			}
-		}		
+		}
+		
+		// insert this at the beginning of the message now that we know the latest block number
+		message.insert(0, "Rates (APR) as of block " + latestBlock + "\n"); 
 		
 		CompoundAPIService.log.warning(message.toString());
 	}

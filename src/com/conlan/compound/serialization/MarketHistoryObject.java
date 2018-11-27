@@ -28,6 +28,17 @@ public class MarketHistoryObject {
 		this.token = token;
 	}
 	
+	public long LatestBlockNumber() {
+		long supplyHistoryBlock = (total_supply_history.size() > 0) ? total_supply_history.get(total_supply_history.size() - 1).block_number : 0L;
+		long supplyRateBlock = (supply_rates.size() > 0) ? supply_rates.get(supply_rates.size() - 1).GetBlockNumber() : 0L;
+		
+		long borrowHistoryBlock = (total_borrows_history.size() > 0) ? total_borrows_history.get(total_borrows_history.size() - 1).block_number : 0L;
+		long borrowRateBlock = (borrow_rates.size() > 0) ? borrow_rates.get(borrow_rates.size() - 1).GetBlockNumber() : 0L;
+		
+		// return highest block number
+		return Math.max(supplyHistoryBlock, Math.max(supplyRateBlock, Math.max(borrowHistoryBlock, borrowRateBlock))); 
+	}
+	
 	public float LatestSupplyRate() {
 		RateObject latestSupply = (supply_rates.size() > 0) ? supply_rates.get(supply_rates.size() - 1) : null; 
 		

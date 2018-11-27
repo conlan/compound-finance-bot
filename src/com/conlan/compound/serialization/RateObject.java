@@ -9,6 +9,10 @@ public class RateObject {
 		// no-args constructor
 	}
 	
+	public long GetBlockNumber() {
+		return block_number;	
+	}
+	
 	public float GetRate() {
 		return rate;
 	}
