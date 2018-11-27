@@ -14,8 +14,6 @@ public class CompoundAPIService {
 	public static final String API_KEY = System.getProperty("COMPOUND_API_KEY");
 	
 	public static <T>T Get(String url, Class<T> returnClass) {
-		log.warning(API_KEY);
-		
 		HttpURLConnection hc = null;
 		
 		String response = null;
