@@ -11,9 +11,11 @@ import com.google.gson.Gson;
 public class CompoundAPIService {
 	public static final Logger log = Logger.getLogger(MarketHistoryService.class.getName());
 	
-	public static final String API_KEY = "XXX"; // TODO pull this out
+	public static final String API_KEY = System.getProperty("COMPOUND_API_KEY");
 	
 	public static <T>T Get(String url, Class<T> returnClass) {
+		log.warning(API_KEY);
+		
 		HttpURLConnection hc = null;
 		
 		String response = null;
