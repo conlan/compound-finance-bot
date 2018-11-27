@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
-public class CompoundService {
+public class CompoundAPIService {
 	public static final Logger log = Logger.getLogger(MarketHistoryService.class.getName());
 	
 	public static final String API_KEY = "XXX"; // TODO pull this out

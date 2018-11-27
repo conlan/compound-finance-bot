@@ -2,6 +2,8 @@ package com.conlan.compound.serialization;
 
 import java.util.ArrayList;
 
+import com.conlan.compound.service.TokenUtils.Token;
+
 public class MarketHistoryObject {
 	public ArrayList<ValueObject> total_supply_history;
 	public ArrayList<ValueObject> total_borrows_history;
@@ -12,8 +14,18 @@ public class MarketHistoryObject {
 	
 	public String asset;
 	
+	private Token token;
+	
 	public MarketHistoryObject() {
 		// no-args constructor
+	}
+	
+	public Token GetToken() {
+		return token;
+	}
+	
+	public void SetToken(Token token) {
+		this.token = token;
 	}
 	
 	public float LatestSupplyRate() {
