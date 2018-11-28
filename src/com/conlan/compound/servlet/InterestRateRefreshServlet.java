@@ -19,7 +19,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 	private static final long serialVersionUID = -9181463126866704910L;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {		
 		// TODO calculate this
 		long maxBlockTimestamp = 1543276800L;
 		long minBlockTimestamp = 1543104000L;
