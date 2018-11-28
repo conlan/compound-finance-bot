@@ -2,7 +2,7 @@ package com.conlan.compound.serialization;
 
 import java.util.ArrayList;
 
-import com.conlan.compound.service.TokenUtils.Token;
+import com.conlan.compound.TokenUtils.Token;
 
 public class MarketHistoryObject {
 	public ArrayList<ValueObject> total_supply_history;

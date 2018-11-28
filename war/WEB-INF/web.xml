@@ -12,6 +12,15 @@
 		<url-pattern>/refreshrates</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>TweetServlet</servlet-name>
+		<servlet-class>com.conlan.compound.servlet.TweetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TweetServlet</servlet-name>
+		<url-pattern>/tweet</url-pattern>
+	</servlet-mapping>
+	
 	<security-constraint>
         <web-resource-collection>
             <web-resource-name>admin</web-resource-name>

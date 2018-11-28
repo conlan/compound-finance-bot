@@ -1,4 +1,6 @@
-package com.conlan.compound.service;
+package com.conlan.compound;
+
+import com.conlan.compound.service.CompoundAPIService;
 
 public class TokenUtils {
 	public static final float HOT_SUPPLY_RATE_THRESHOLD = 5f; // 5%

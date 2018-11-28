@@ -6,12 +6,44 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import com.conlan.compound.TokenUtils;
+import com.conlan.compound.TokenUtils.Token;
+import com.conlan.compound.serialization.MarketHistoryObject;
 import com.google.gson.Gson;
 
 public class CompoundAPIService {
-	public static final Logger log = Logger.getLogger(MarketHistoryService.class.getName());
+	public static final Logger log = Logger.getLogger(CompoundAPIService.class.getName());
 	
 	public static final String API_KEY = System.getProperty("COMPOUND_API_KEY");
+	
+	public static final String ENDPOINT_MARKET_HISTORY = "https://api.compound.finance/api/market_history/v1/graph"; 
+	
+	public static MarketHistoryObject GetHistory(Token token, long minBlockTimestamp, long maxBlockTimestamp) {
+		// get the most recent interest rates from Compound
+		StringBuilder urlBuilder = new StringBuilder();
+		
+		urlBuilder.append(ENDPOINT_MARKET_HISTORY);
+		urlBuilder.append("?");
+		
+		urlBuilder.append("asset=");
+		urlBuilder.append(TokenUtils.GetAddress(token));
+		
+		urlBuilder.append("&min_block_timestamp=");
+		urlBuilder.append(minBlockTimestamp);
+
+		urlBuilder.append("&max_block_timestamp=");
+		urlBuilder.append(maxBlockTimestamp);
+		
+		urlBuilder.append("&num_buckets=1");
+		
+		MarketHistoryObject marketHistory = CompoundAPIService.Get(urlBuilder.toString(), MarketHistoryObject.class);
+		
+		if (marketHistory != null) {
+			marketHistory.SetToken(token);
+		}
+		
+		return marketHistory;
+	}
 	
 	public static <T>T Get(String url, Class<T> returnClass) {		
 		HttpURLConnection hc = null;

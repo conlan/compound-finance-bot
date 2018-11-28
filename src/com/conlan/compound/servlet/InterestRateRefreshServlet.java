@@ -9,27 +9,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.conlan.compound.TokenUtils;
+import com.conlan.compound.TokenUtils.Token;
 import com.conlan.compound.serialization.MarketHistoryObject;
-import com.conlan.compound.service.TokenUtils.Token;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.conlan.compound.service.CompoundAPIService;
-import com.conlan.compound.service.MarketHistoryService;
-import com.conlan.compound.service.TokenUtils;
 
 public class InterestRateRefreshServlet extends HttpServlet {
 	private static final long serialVersionUID = -9181463126866704910L;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {		
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// get the now time
 		long unixNow = System.currentTimeMillis() / 1000L;
 		
+		// set max block time
 		long maxBlockTimestamp = unixNow;
 		
-		long minBlockTimestamp = unixNow - (60 * /*minute */ 60/* hour */); // 1 hour ago
+		// set min block time
+		long minBlockTimestamp = unixNow - (60 * /*minute */ 30/* hour */); // 30 minutes ago
 		
+		// retrieve market histories for all assets
 		List<MarketHistoryObject> histories = new ArrayList<MarketHistoryObject>();
 		
 		for (Token token : Token.values()) {
-			MarketHistoryObject marketHistory = MarketHistoryService.GetHistory(token, minBlockTimestamp, maxBlockTimestamp);
+			MarketHistoryObject marketHistory = CompoundAPIService.GetHistory(token, minBlockTimestamp, maxBlockTimestamp);
 			
 			if (marketHistory != null) {
 				histories.add(marketHistory);
@@ -90,8 +96,10 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		}
 		
 		// insert this at the beginning of the message now that we know the latest block number
-		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n"); 
+		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n");
 		
-		CompoundAPIService.log.warning(message.toString());
+		// Queue up a task to tweet this message
+		Queue queue = QueueFactory.getDefaultQueue();		
+		queue.add(TaskOptions.Builder.withUrl("/tweet").param("status", message.toString()));
 	}
 }
