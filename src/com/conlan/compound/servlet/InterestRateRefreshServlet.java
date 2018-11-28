@@ -29,7 +29,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		long maxBlockTimestamp = unixNow;
 		
 		// set min block time
-		long minBlockTimestamp = unixNow - (60 * /*minute */ 30/* hour */); // 30 minutes ago
+		long minBlockTimestamp = unixNow - (60 * /*minute */ 2); // 2 minutes ago
 		
 		// retrieve market histories for all assets
 		List<MarketHistoryObject> histories = new ArrayList<MarketHistoryObject>();
@@ -69,14 +69,14 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			message.append(" - ");
 			
 			// show borrow rate
-			float borrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
+			double borrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
 			
 			message.append("Borrow ");
 			message.append(borrowRate);
 			message.append("%");
 			
 			// show supply rate
-			float supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
+			double supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
 			
 			message.append(" - Supply ");			
 			message.append(supplyRate);
@@ -96,8 +96,8 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		}
 		
 		// insert this at the beginning of the message now that we know the latest block number
-		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n");
-		
+		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n\n");
+
 		// Queue up a task to tweet this message
 		Queue queue = QueueFactory.getDefaultQueue();		
 		queue.add(TaskOptions.Builder.withUrl("/tweet").param("status", message.toString()));

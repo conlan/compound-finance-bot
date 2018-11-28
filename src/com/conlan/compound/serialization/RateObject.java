@@ -1,7 +1,7 @@
 package com.conlan.compound.serialization;
 
 public class RateObject {
-	private float rate;
+	private double rate;
 	private long block_timestamp;
 	private long block_number;
 	
@@ -13,7 +13,7 @@ public class RateObject {
 		return block_number;	
 	}
 	
-	public float GetRate() {
+	public double GetRate() {
 		return rate;
 	}
 	

@@ -3,7 +3,7 @@ package com.conlan.compound;
 import com.conlan.compound.service.CompoundAPIService;
 
 public class TokenUtils {
-	public static final float HOT_SUPPLY_RATE_THRESHOLD = 5f; // 5%
+	public static final double HOT_SUPPLY_RATE_THRESHOLD = 5d; // 5%
 	
 	public enum Token {
 		WETH,
@@ -32,7 +32,7 @@ public class TokenUtils {
 		return null;		
 	}
 	
-	public static float GetHumanReadableRate(float rawRate) {
+	public static double GetHumanReadableRate(double rawRate) {
 		rawRate *= 100 * 10 * 10;
 		
 		rawRate = Math.round(rawRate);
@@ -43,7 +43,7 @@ public class TokenUtils {
 	}
 	
 	// decorate the rate with a fun emoji
-	public static String GetRateDecoration(float supplyRate, float borrowRate) {
+	public static String GetRateDecoration(double supplyRate, double borrowRate) {
 		CompoundAPIService.log.warning(supplyRate + "  " + borrowRate);
 		if (supplyRate <= 0) { // no point in supplying capital
 			return "😵";
