@@ -1,7 +1,7 @@
 package com.conlan.compound.service;
 
 public class TokenUtils {
-	public static final float HOT_SUPPLY_RATE_THRESHOLD = 0.5f;
+	public static final float HOT_SUPPLY_RATE_THRESHOLD = 5f; // 5%
 	
 	public enum Token {
 		WETH,
@@ -42,6 +42,7 @@ public class TokenUtils {
 	
 	// decorate the rate with a fun emoji
 	public static String GetRateDecoration(float supplyRate, float borrowRate) {
+		CompoundAPIService.log.warning(supplyRate + "  " + borrowRate);
 		if (supplyRate <= 0) { // no point in supplying capital
 			return "😵";
 		} else if (supplyRate >= HOT_SUPPLY_RATE_THRESHOLD) { // good rates!

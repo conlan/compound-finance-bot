@@ -20,9 +20,11 @@ public class InterestRateRefreshServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {		
-		// TODO calculate this
-		long maxBlockTimestamp = 1543276800L;
-		long minBlockTimestamp = 1543104000L;
+		long unixNow = System.currentTimeMillis() / 1000L;
+		
+		long maxBlockTimestamp = unixNow;
+		
+		long minBlockTimestamp = unixNow - (60 * /*minute */ 60/* hour */); // 1 hour ago
 		
 		List<MarketHistoryObject> histories = new ArrayList<MarketHistoryObject>();
 		
@@ -58,21 +60,21 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			// show symbol
 			message.append("$");
 			message.append(symbol);
-			message.append(", ");
-			
-			// show supply rate
-			float supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
-			
-			message.append("Supply ");			
-			message.append(supplyRate);
-			message.append("%");
+			message.append(" - ");
 			
 			// show borrow rate
 			float borrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
 			
-			message.append(" - Borrow ");
+			message.append("Borrow ");
 			message.append(borrowRate);
 			message.append("%");
+			
+			// show supply rate
+			float supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
+			
+			message.append(" - Supply ");			
+			message.append(supplyRate);
+			message.append("%");					
 			
 			// add optional rate decoration
 			String tokenRateDecoration = TokenUtils.GetRateDecoration(supplyRate, borrowRate);
@@ -88,7 +90,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		}
 		
 		// insert this at the beginning of the message now that we know the latest block number
-		message.insert(0, "Rates (APR) as of block " + latestBlock + "\n"); 
+		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n"); 
 		
 		CompoundAPIService.log.warning(message.toString());
 	}
