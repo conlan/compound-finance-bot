@@ -39,9 +39,9 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 		}
 		
 		// only proceed if we successfully retrieved all asset rates		
-		StringBuilder message = new StringBuilder("🚨🚨 Recent rate (APR) alert 🚨🚨\n");
+		StringBuilder message = new StringBuilder();
 		
-		boolean atLeastOneMarketQualifiedForAlert = false;
+		int numQualifiedAlerts = 0;
 		
 		for (MarketHistoryObject marketHistory : histories) {			
 			// check if this market history qualifies for an alert			
@@ -58,7 +58,7 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 			CompoundAPIService.log.info(token + " " + earliestSupplyRate + " -> " + currentSupplyRate + " = " + humanReadableRateChangePercentage + "%");
 			
 			if (TokenUtils.DoesRateChangeQualifyForAlert(currentSupplyRate, earliestSupplyRate)) {
-				atLeastOneMarketQualifiedForAlert = true;									
+				numQualifiedAlerts++;									
 				
 				if (humanReadableRateChangePercentage > 0) {
 					message.append("📈 ");
@@ -71,12 +71,12 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 				message.append(" Supply rate has ");
 				
 				if (humanReadableRateChangePercentage > 0) {
-					message.append("gone up by ");	
+					message.append("increased to ");	
 				} else {
-					message.append("dropped ");
+					message.append("decreased to ");
 				}
 				
-				message.append(humanReadableRateChangePercentage);
+				message.append(currentSupplyRate);
 				message.append("%");
 				if (humanReadableRateChangePercentage > 0) {
 					message.append("!");
@@ -86,11 +86,17 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 			}			
 		}
 		
-		message.append("\nCompound your crypto at compound.finance");
+		if (numQualifiedAlerts > 1) {
+			message.insert(0, "🚨🚨 Recent (APR) alerts 🚨🚨\n\n");
+		} else {
+			message.insert(0, "🚨🚨 Recent (APR) alert 🚨🚨\n\n");
+		}
+		
+		message.append("\n\nCompound your crypto at compound.finance");
 		
 		CompoundAPIService.log.info(message.toString());
 		
-		if (atLeastOneMarketQualifiedForAlert) {
+		if (numQualifiedAlerts > 0) {
 			// TODO tweet
 			CompoundAPIService.log.warning("WOULD TWEET");
 		}
