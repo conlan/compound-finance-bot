@@ -1,15 +1,14 @@
 package com.conlan.compound;
 
-import com.conlan.compound.service.CompoundAPIService;
-
 public class TokenUtils {
 	public static final double HOT_SUPPLY_RATE_THRESHOLD = 5d; // 5%
 	
 	public enum Token {
 		WETH,
+		DAI,
 		BAT,
 		ZRX,
-		REP
+		REP,		
 	}
 	
 	public static String GetAddress(Token token) {
@@ -18,6 +17,7 @@ public class TokenUtils {
 			case BAT: return "0x0D8775F648430679A709E98d2b0Cb6250d2887EF";
 			case ZRX: return "0xE41d2489571d322189246DaFA5ebDe1F4699F498";
 			case REP: return "0x1985365e9f78359a9B6AD760e32412f4a445E862";
+			case DAI: return "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359";
 		}
 		return null;
 	}
@@ -28,6 +28,7 @@ public class TokenUtils {
 			case BAT: return "BAT";
 			case ZRX: return "ZRX";
 			case REP: return "REP";
+			case DAI: return "DAI";
 		}
 		return null;		
 	}
@@ -43,11 +44,11 @@ public class TokenUtils {
 	}
 	
 	// decorate the rate with a fun emoji
-	public static String GetRateDecoration(double supplyRate, double borrowRate) {
-		CompoundAPIService.log.warning(supplyRate + "  " + borrowRate);
-		if (supplyRate <= 0) { // no point in supplying capital
+	public static String GetRateDecoration(double currentSupplyRate, double previousSupplyRate) {
+		// TODO take previous supply rate into account
+		if (currentSupplyRate <= 0) { // no point in supplying capital
 			return "😵";
-		} else if (supplyRate >= HOT_SUPPLY_RATE_THRESHOLD) { // good rates!
+		} else if (currentSupplyRate >= HOT_SUPPLY_RATE_THRESHOLD) { // good rates!
 			return "🔥";
 		} else {
 			return null;

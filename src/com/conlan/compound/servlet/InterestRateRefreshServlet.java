@@ -69,21 +69,22 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			message.append(" - ");
 			
 			// show borrow rate
-			double borrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
+			double currentBorrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
 			
 			message.append("Borrow ");
-			message.append(borrowRate);
+			message.append(currentBorrowRate);
 			message.append("%");
 			
 			// show supply rate
-			double supplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
+			double currentSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
+			double previousSupplyRate = 0.0f;
 			
 			message.append(" - Supply ");			
-			message.append(supplyRate);
+			message.append(currentSupplyRate);
 			message.append("%");					
 			
 			// add optional rate decoration
-			String tokenRateDecoration = TokenUtils.GetRateDecoration(supplyRate, borrowRate);
+			String tokenRateDecoration = TokenUtils.GetRateDecoration(currentSupplyRate, previousSupplyRate);
 			if (tokenRateDecoration != null) {
 				message.append(" ");
 				message.append(tokenRateDecoration);
