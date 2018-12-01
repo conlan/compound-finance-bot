@@ -3,8 +3,12 @@ package com.conlan.compound;
 import com.conlan.compound.service.CompoundAPIService;
 
 public class TokenUtils {
+	// threshold for whether to show a fire lit
 	public static final double HOT_SUPPLY_RATE_THRESHOLD = 5d; // 5%
+	// threshold for whether to show an up/down chart
 	public static final double UPDATED_SUPPLY_RATE_THRESHOLD = 0.01d; // 0.01%
+	// the percentage change for a supply rate to qualify for an alert
+	public static final double SUPPLY_RATE_ALERT_THRESHOLD = 0.02d; // 20% chance needed for an alert
 	
 	public enum Token {
 		WETH,
@@ -26,14 +30,13 @@ public class TokenUtils {
 	}
 	
 	public static String GetSymbol(Token token) {
-		switch (token) {
-			case WETH: return "WETH";
-			case BAT: return "BAT";
-			case ZRX: return "ZRX";
-			case REP: return "REP";
-			case DAI: return "DAI";
-		}
-		return null;		
+		return token.toString().toUpperCase();
+	}
+	
+	public static int GetHumanReadableRateChangePercentage(double rawRateChangePercentage) {
+		int percentage = (int) (rawRateChangePercentage * 100);
+		
+		return percentage;
 	}
 	
 	public static double GetHumanReadableRate(double rawRate) {
@@ -46,9 +49,28 @@ public class TokenUtils {
 		return rawRate;
 	}
 	
+	public static boolean DoesRateChangeQualifyForAlert(double currentSupplyRate, double previousSupplyRate) {
+		double rateChangePercentage = GetRatePercentageChange(currentSupplyRate, previousSupplyRate);
+		
+		if (rateChangePercentage >= SUPPLY_RATE_ALERT_THRESHOLD) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static double GetRatePercentageChange (double currentSupplyRate, double previousSupplyRate) {
+		if (previousSupplyRate == 0) {
+			return 0;
+		}
+		
+		double rateChangePercentage = (currentSupplyRate / previousSupplyRate) - 1.0;
+		
+		return rateChangePercentage;
+	}
+	
 	// decorate the rate with a fun emoji
 	public static String GetRateDecoration(double currentSupplyRate, double previousSupplyRate) {
-		// TODO take previous supply rate into account
 		if (currentSupplyRate <= 0) { // no point in supplying capital
 			return "😵";
 		} else if (currentSupplyRate >= HOT_SUPPLY_RATE_THRESHOLD) { // good rates!

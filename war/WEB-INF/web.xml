@@ -21,6 +21,15 @@
 		<url-pattern>/tweet</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>InterestRateDeltaDetectionServlet</servlet-name>
+		<servlet-class>com.conlan.compound.servlet.InterestRateDeltaDetectionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>InterestRateDeltaDetectionServlet</servlet-name>
+		<url-pattern>/checkratedeltas</url-pattern>
+	</servlet-mapping>
+	
 	<security-constraint>
         <web-resource-collection>
             <web-resource-name>admin</web-resource-name>

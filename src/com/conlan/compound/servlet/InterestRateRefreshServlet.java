@@ -17,28 +17,22 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.conlan.compound.service.CompoundAPIService;
 
+/**
+ * Retrieve latest interest rates and tweet them.
+ */
 public class InterestRateRefreshServlet extends HttpServlet {
 	private static final long serialVersionUID = -9181463126866704910L;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// get the now time
-		long unixNow = System.currentTimeMillis() / 1000L;
-		
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {		
 		// retrieve the past 4 hours
 		int numHours = 4;
-		
-		// set max block time
-		long maxBlockTimestamp = unixNow;
-		
-		// set min block time
-		long minBlockTimestamp = unixNow - (60 * /*minute*/ 60 * /*hour*/ numHours);
 		
 		// retrieve market histories for all assets
 		List<MarketHistoryObject> histories = new ArrayList<MarketHistoryObject>();
 		
 		for (Token token : Token.values()) {
-			MarketHistoryObject marketHistory = CompoundAPIService.GetHistory(token, minBlockTimestamp, maxBlockTimestamp, numHours);
+			MarketHistoryObject marketHistory = CompoundAPIService.GetAssetMarketHistory(token, numHours);
 			
 			if (marketHistory != null) {
 				histories.add(marketHistory);
@@ -61,17 +55,16 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			}
 			
 			// get token and symbol
-			Token token = marketHistory.GetToken();
-			
+			Token token = marketHistory.GetToken();			
 			String symbol = TokenUtils.GetSymbol(token);
 			
 			double currentBorrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
 			
 			double currentSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
-			double previousSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.EarliestSupplyRate());
+			double earliestSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.EarliestSupplyRate());
 			
 			// insert rate decoration
-			String tokenRateDecoration = TokenUtils.GetRateDecoration(currentSupplyRate, previousSupplyRate);
+			String tokenRateDecoration = TokenUtils.GetRateDecoration(currentSupplyRate, earliestSupplyRate);
 			if (tokenRateDecoration != null) {				
 				message.append(tokenRateDecoration);
 				message.append(" ");

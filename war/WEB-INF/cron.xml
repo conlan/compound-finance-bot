@@ -5,4 +5,9 @@
     <description>scheduled refresh job</description>
     <schedule>every 4 hours</schedule>
   </cron>
+  <cron>
+    <url>/checkratedeltas</url>
+    <description>scheduled rate delta detection job</description>
+    <schedule>every 77 minutes</schedule>
+  </cron>
 </cronentries>
