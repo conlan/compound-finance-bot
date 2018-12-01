@@ -1,7 +1,10 @@
 package com.conlan.compound;
 
+import com.conlan.compound.service.CompoundAPIService;
+
 public class TokenUtils {
 	public static final double HOT_SUPPLY_RATE_THRESHOLD = 5d; // 5%
+	public static final double UPDATED_SUPPLY_RATE_THRESHOLD = 0.01d; // 0.01%
 	
 	public enum Token {
 		WETH,
@@ -51,7 +54,29 @@ public class TokenUtils {
 		} else if (currentSupplyRate >= HOT_SUPPLY_RATE_THRESHOLD) { // good rates!
 			return "🔥";
 		} else {
-			return null;
-		}
+			// check if we have a previous supply rate
+			if (previousSupplyRate != 0) {
+				// we do, so find how much the rate changed
+				double rateChange = currentSupplyRate - previousSupplyRate;
+				// find absolute delta
+				double delta = Math.abs(rateChange);
+				
+				CompoundAPIService.log.warning("current rate = " + currentSupplyRate + ", previous = " + previousSupplyRate +
+						" change = " + rateChange + "  , delta = " + delta + "  " + UPDATED_SUPPLY_RATE_THRESHOLD);
+				// if delta is big enough, use a chart decoration
+				if (delta >= UPDATED_SUPPLY_RATE_THRESHOLD) {
+					if (rateChange > 0) {
+						// positive rate change
+						return "📈";
+					} else {
+						// negative rate change
+						return "📉";
+					}
+				}
+			}
+			
+			// no decoration, just use a space filler so at least all symbols are lined up
+			return "▪️";
+		} 
 	}
 }

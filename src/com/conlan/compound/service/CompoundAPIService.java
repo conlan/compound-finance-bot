@@ -18,7 +18,7 @@ public class CompoundAPIService {
 	
 	public static final String ENDPOINT_MARKET_HISTORY = "https://api.compound.finance/api/market_history/v1/graph"; 
 	
-	public static MarketHistoryObject GetHistory(Token token, long minBlockTimestamp, long maxBlockTimestamp) {
+	public static MarketHistoryObject GetHistory(Token token, long minBlockTimestamp, long maxBlockTimestamp, int numBuckets) {
 		// get the most recent interest rates from Compound
 		StringBuilder urlBuilder = new StringBuilder();
 		
@@ -34,7 +34,8 @@ public class CompoundAPIService {
 		urlBuilder.append("&max_block_timestamp=");
 		urlBuilder.append(maxBlockTimestamp);
 		
-		urlBuilder.append("&num_buckets=1");
+		urlBuilder.append("&num_buckets=");
+		urlBuilder.append(numBuckets);
 		
 		MarketHistoryObject marketHistory = CompoundAPIService.Get(urlBuilder.toString(), MarketHistoryObject.class);
 		

@@ -25,17 +25,20 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		// get the now time
 		long unixNow = System.currentTimeMillis() / 1000L;
 		
+		// retrieve the past 4 hours
+		int numHours = 4;
+		
 		// set max block time
 		long maxBlockTimestamp = unixNow;
 		
 		// set min block time
-		long minBlockTimestamp = unixNow - (60 * /*minute */ 2); // 2 minutes ago
+		long minBlockTimestamp = unixNow - (60 * /*minute*/ 60 * /*hour*/ numHours);
 		
 		// retrieve market histories for all assets
 		List<MarketHistoryObject> histories = new ArrayList<MarketHistoryObject>();
 		
 		for (Token token : Token.values()) {
-			MarketHistoryObject marketHistory = CompoundAPIService.GetHistory(token, minBlockTimestamp, maxBlockTimestamp);
+			MarketHistoryObject marketHistory = CompoundAPIService.GetHistory(token, minBlockTimestamp, maxBlockTimestamp, numHours);
 			
 			if (marketHistory != null) {
 				histories.add(marketHistory);
@@ -44,8 +47,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			}			
 		}
 		
-		// only proceed if we successfully retrieved all asset rates
-		
+		// only proceed if we successfully retrieved all asset rates		
 		StringBuilder message = new StringBuilder();
 
 		// track the latest block value amongst all the market history objects
@@ -63,33 +65,33 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			
 			String symbol = TokenUtils.GetSymbol(token);
 			
+			double currentBorrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
+			
+			double currentSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
+			double previousSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.EarliestSupplyRate());
+			
+			// insert rate decoration
+			String tokenRateDecoration = TokenUtils.GetRateDecoration(currentSupplyRate, previousSupplyRate);
+			if (tokenRateDecoration != null) {				
+				message.append(tokenRateDecoration);
+				message.append(" ");
+			}
+			
 			// show symbol
 			message.append("$");
 			message.append(symbol);
 			message.append(" - ");
 			
-			// show borrow rate
-			double currentBorrowRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestBorrowRate());
-			
+			// show borrow rate						
 			message.append("Borrow ");
 			message.append(currentBorrowRate);
 			message.append("%");
 			
 			// show supply rate
-			double currentSupplyRate = TokenUtils.GetHumanReadableRate(marketHistory.LatestSupplyRate());
-			double previousSupplyRate = 0.0f;
-			
 			message.append(" - Supply ");			
 			message.append(currentSupplyRate);
 			message.append("%");					
-			
-			// add optional rate decoration
-			String tokenRateDecoration = TokenUtils.GetRateDecoration(currentSupplyRate, previousSupplyRate);
-			if (tokenRateDecoration != null) {
-				message.append(" ");
-				message.append(tokenRateDecoration);
-			}
-			
+
 			// append newline if this isn't the last history
 			if (marketHistory != histories.get(histories.size() - 1)) {
 				message.append("\n");

@@ -39,6 +39,16 @@ public class MarketHistoryObject {
 		return Math.max(supplyHistoryBlock, Math.max(supplyRateBlock, Math.max(borrowHistoryBlock, borrowRateBlock))); 
 	}
 	
+	public double EarliestSupplyRate() {
+		RateObject earliestSupply = (supply_rates.size() > 0) ? supply_rates.get(0) : null;
+		
+		if (earliestSupply == null) {
+			return 0.0f;
+		} else {
+			return earliestSupply.GetRate();
+		}
+	}
+	
 	public double LatestSupplyRate() {
 		RateObject latestSupply = (supply_rates.size() > 0) ? supply_rates.get(supply_rates.size() - 1) : null; 
 		
