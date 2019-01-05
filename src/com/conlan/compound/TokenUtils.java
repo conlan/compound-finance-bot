@@ -8,7 +8,7 @@ public class TokenUtils {
 	// threshold for whether to show an up/down chart
 	public static final double UPDATED_SUPPLY_RATE_THRESHOLD = 0.01d; // 0.01%
 	// the percentage change for a supply rate to qualify for an alert
-	public static final double SUPPLY_RATE_ALERT_THRESHOLD = 0.03d; // 20% chance needed for an alert
+	public static final double SUPPLY_RATE_ALERT_THRESHOLD = 0.20d; // 20% chance needed for an alert
 	
 	public enum Token {
 		WETH,

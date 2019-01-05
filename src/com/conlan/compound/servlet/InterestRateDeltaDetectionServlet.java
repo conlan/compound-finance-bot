@@ -13,6 +13,9 @@ import com.conlan.compound.TokenUtils;
 import com.conlan.compound.TokenUtils.Token;
 import com.conlan.compound.serialization.MarketHistoryObject;
 import com.conlan.compound.service.CompoundAPIService;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /*
  * Poll for significant deltas in interest rate and tweet them.
@@ -83,6 +86,7 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 				} else {
 					message.append("...");
 				}
+				message.append("\n");
 			}			
 		}
 		
@@ -92,13 +96,14 @@ public class InterestRateDeltaDetectionServlet extends HttpServlet {
 			message.insert(0, "🚨🚨 Recent (APR) alert 🚨🚨\n\n");
 		}
 		
-		message.append("\n\nCompound your crypto at compound.finance");
+		message.append("\nCompound your crypto at compound.finance");
 		
 		CompoundAPIService.log.info(message.toString());
 		
 		if (numQualifiedAlerts > 0) {
-			// TODO tweet
-			CompoundAPIService.log.warning("WOULD TWEET");
+			// Queue up a task to tweet this message
+			Queue queue = QueueFactory.getDefaultQueue();		
+			queue.add(TaskOptions.Builder.withUrl("/tweet").param("status", message.toString()));
 		}
 	}
 }

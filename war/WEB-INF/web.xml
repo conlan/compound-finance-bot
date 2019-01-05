@@ -30,6 +30,16 @@
 		<url-pattern>/checkratedeltas</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>ReportLiquidationServlet</servlet-name>
+		<servlet-class>com.conlan.compound.servlet.ReportLiquidationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ReportLiquidationServlet</servlet-name>
+		<url-pattern>/reportliquidations</url-pattern>
+	</servlet-mapping>
+	
+	
 	<security-constraint>
         <web-resource-collection>
             <web-resource-name>admin</web-resource-name>

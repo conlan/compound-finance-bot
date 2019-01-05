@@ -9,5 +9,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/conlan/git/compound-finance-bot/war/WEB-INF/lib/twitter4j-core-4.0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/conlan/git/compound-finance-bot/war/WEB-INF/lib/commons-codec-1.11.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
