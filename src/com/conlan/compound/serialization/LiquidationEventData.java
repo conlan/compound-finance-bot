@@ -2,15 +2,17 @@ package com.conlan.compound.serialization;
 
 import java.util.ArrayList;
 
+import com.conlan.compound.TokenUtils;
+import com.conlan.compound.TokenUtils.Token;
 import com.conlan.compound.service.Web3Service;
 
 
 public class LiquidationEventData {
-	public String assetBorrow;
-	public Long amountRepaid;
+	public Token assetBorrow;
+	public Double amountRepaid;
 	
-	public String assetCollateral;
-	public Long amountSeized;
+	public Token assetCollateral;
+	public Double amountSeized;
 	
 	public static LiquidationEventData Parse(String eventData) {
 		LiquidationEventData liquidation = new LiquidationEventData();
@@ -26,13 +28,15 @@ public class LiquidationEventData {
 			params.add(param);			
 		}
 		
-		liquidation.assetBorrow = Web3Service.ToAddress(params.get(1));
+		liquidation.assetBorrow = TokenUtils.GetToken(Web3Service.ToAddress(params.get(1)));
 		
-		liquidation.amountRepaid = Web3Service.ToNumeric(params.get(4));
+		int decimals = TokenUtils.GetDecimals(liquidation.assetBorrow);		
+		liquidation.amountRepaid = new Double(Web3Service.ToNumeric(params.get(4)) / Math.pow(10, decimals));
 		
-		liquidation.assetCollateral = Web3Service.ToAddress(params.get(7));
+		liquidation.assetCollateral = TokenUtils.GetToken(Web3Service.ToAddress(params.get(7)));
 		
-		liquidation.amountSeized = Web3Service.ToNumeric(params.get(10));
+		decimals = TokenUtils.GetDecimals(liquidation.assetCollateral);
+		liquidation.amountSeized = new Double(Web3Service.ToNumeric(params.get(10)) / Math.pow(10, decimals));
 		
 		return liquidation;
 	}

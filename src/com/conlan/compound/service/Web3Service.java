@@ -12,7 +12,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.conlan.compound.TokenUtils.Token;
+import com.conlan.compound.serialization.ContractLogObject;
 import com.conlan.compound.serialization.ContractLogsObject;
+import com.conlan.compound.serialization.LiquidationEventData;
 import com.google.gson.Gson;
 
 public class Web3Service {
@@ -38,7 +41,7 @@ public class Web3Service {
 		Hashtable<String, Object> paramsObject = new Hashtable<String, Object>();
 		params.add(paramsObject);
 		
-		paramsObject.put("fromBlock", "0x6b0b71");
+		paramsObject.put("fromBlock", "0x6b0b71"); // TODO pull this from datastore
 		paramsObject.put("address", COMPOUND_ADDRESS);
 		
 		ArrayList<String> topics = new ArrayList<String>();
@@ -48,7 +51,27 @@ public class Web3Service {
 		
 		ContractLogsObject contractLogs = PostJSON(url, data, ContractLogsObject.class);
 		
-		if (contractLogs != null) {			
+		if (contractLogs != null) {
+			Hashtable<Token, Double> amountsRepaid = new Hashtable<Token, Double>();
+			Hashtable<Token, Double> amountsSeized = new Hashtable<Token, Double>();
+			
+			for (ContractLogObject logObject : contractLogs.result) {
+				 LiquidationEventData liquidation = logObject.ToLiquidationEventData();
+				
+				 // update the amount repaid
+				 if (amountsRepaid.containsKey(liquidation.assetBorrow) == false) {
+					 amountsRepaid.put(liquidation.assetBorrow, new Double(0));
+				 }
+				 
+				 amountsRepaid.put(liquidation.assetBorrow, amountsRepaid.get(liquidation.assetBorrow) + liquidation.amountRepaid);
+				 
+				 // update the amount seized
+				 if (amountsSeized.containsKey(liquidation.assetCollateral) == false) {
+					 amountsSeized.put(liquidation.assetCollateral, new Double(0));
+				 }
+				 
+				 amountsSeized.put(liquidation.assetCollateral, amountsSeized.get(liquidation.assetCollateral) + liquidation.amountSeized);
+			}
 		}
 	}
 	
