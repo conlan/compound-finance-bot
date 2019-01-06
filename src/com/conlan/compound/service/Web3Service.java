@@ -16,6 +16,7 @@ import com.conlan.compound.TokenUtils.Token;
 import com.conlan.compound.serialization.ContractLogObject;
 import com.conlan.compound.serialization.ContractLogsObject;
 import com.conlan.compound.serialization.LiquidationEventData;
+import com.conlan.compound.serialization.LiquidationRecapData;
 import com.google.gson.Gson;
 
 public class Web3Service {
@@ -26,22 +27,10 @@ public class Web3Service {
 	
 	public static final Logger log = Logger.getLogger(Web3Service.class.getName());
 	
-	public static void GetLogs() {
-		String url="https://mainnet.infura.io/v3/" + INFURA_TOKEN;
-		
-		Hashtable<String, Object> data = new Hashtable<String, Object>();
-		data.put("jsonrpc", "2.0");
-		data.put("method", "eth_getLogs");
-		data.put("id", 1);
-		
-		
-		ArrayList<Object> params = new ArrayList<Object>();
-		data.put("params", params);
-		
+	public static LiquidationRecapData FetchLiquidationRecap(long lastFetchedBlock, long toBlock) {
 		Hashtable<String, Object> paramsObject = new Hashtable<String, Object>();
-		params.add(paramsObject);
-		
-		paramsObject.put("fromBlock", "0x6b0b71"); // TODO pull this from datastore
+		paramsObject.put("fromBlock", ToHex(lastFetchedBlock));
+		paramsObject.put("toBlock", ToHex(toBlock));		
 		paramsObject.put("address", COMPOUND_ADDRESS);
 		
 		ArrayList<String> topics = new ArrayList<String>();
@@ -49,7 +38,9 @@ public class Web3Service {
 		
 		paramsObject.put("topics", topics);
 		
-		ContractLogsObject contractLogs = PostJSON(url, data, ContractLogsObject.class);
+		ContractLogsObject contractLogs = Web3RPC("eth_getLogs", paramsObject, ContractLogsObject.class);
+		
+		LiquidationRecapData liquidationRecap = null;
 		
 		if (contractLogs != null) {
 			Hashtable<Token, Double> amountsRepaid = new Hashtable<Token, Double>();
@@ -72,7 +63,29 @@ public class Web3Service {
 				 
 				 amountsSeized.put(liquidation.assetCollateral, amountsSeized.get(liquidation.assetCollateral) + liquidation.amountSeized);
 			}
+			
+			liquidationRecap = new LiquidationRecapData(amountsRepaid, amountsSeized);
 		}
+		
+		return liquidationRecap;
+	}
+	
+	public static <T>T Web3RPC(String method, Hashtable<String, Object> paramsObject, Class<T> returnClass) {
+		String url="https://mainnet.infura.io/v3/" + INFURA_TOKEN;
+		
+		Hashtable<String, Object> data = new Hashtable<String, Object>();
+		data.put("jsonrpc", "2.0");		
+		data.put("method", method);
+		data.put("id", 1);
+	
+		ArrayList<Object> params = new ArrayList<Object>();
+		data.put("params", params);
+		
+		if (paramsObject != null) {
+			params.add(paramsObject);
+		}
+		
+		return PostJSON(url, data, returnClass);
 	}
 	
 	// TODO refactor this and compoundAPIService.Get into a separate service
@@ -136,6 +149,14 @@ public class Web3Service {
 		return null;
 	}
 	
+	public static String ToHex(long number) {
+		BigInteger numericValue = new BigInteger("" + number);
+		
+		byte[] bytes = numericValue.toByteArray();
+		
+		return "0x" + Hex.encodeHexString(bytes);
+	}
+	
 	public static Long ToNumeric(String hex) {
 		try {
 			byte[] bytes = Hex.decodeHex(hex.toCharArray());
@@ -149,12 +170,13 @@ public class Web3Service {
 		}
 	}
 	
-	public static String ToAddress(String hex) {	
+	public static String ToAddress(String hex) {
+		
 		try {
 			byte[] bytes = Hex.decodeHex(hex.toCharArray());
 			
 			BigInteger numericValue = new BigInteger(bytes);
-			
+
 			return "0x" + numericValue.toString(16);
 		} catch (Exception e) {
 			e.printStackTrace();

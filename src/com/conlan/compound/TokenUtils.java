@@ -1,6 +1,8 @@
 package com.conlan.compound;
 
+import java.text.NumberFormat;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import com.conlan.compound.service.CompoundAPIService;
 
@@ -16,19 +18,19 @@ public class TokenUtils {
 	public static Hashtable<Token, Integer> tokenDecimalMap = new Hashtable<Token, Integer>();
 	
 	static {
-		tokenSymbolMap.put(Token.WETH, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
+		tokenSymbolMap.put(Token.WETH, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase());
 		tokenDecimalMap.put(Token.WETH, 18);
 		
-		tokenSymbolMap.put(Token.BAT, "0x0D8775F648430679A709E98d2b0Cb6250d2887EF");
+		tokenSymbolMap.put(Token.BAT, "0x0D8775F648430679A709E98d2b0Cb6250d2887EF".toLowerCase());
 		tokenDecimalMap.put(Token.BAT, 18);
 		
-		tokenSymbolMap.put(Token.ZRX, "0xE41d2489571d322189246DaFA5ebDe1F4699F498");
+		tokenSymbolMap.put(Token.ZRX, "0xE41d2489571d322189246DaFA5ebDe1F4699F498".toLowerCase());
 		tokenDecimalMap.put(Token.ZRX, 18);
 		
-		tokenSymbolMap.put(Token.REP, "0x1985365e9f78359a9B6AD760e32412f4a445E862");
+		tokenSymbolMap.put(Token.REP, "0x1985365e9f78359a9B6AD760e32412f4a445E862".toLowerCase());
 		tokenDecimalMap.put(Token.REP, 18);
 		
-		tokenSymbolMap.put(Token.DAI, "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359");
+		tokenSymbolMap.put(Token.DAI, "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359".toLowerCase());
 		tokenDecimalMap.put(Token.DAI, 18);
 	}
 	
@@ -41,6 +43,8 @@ public class TokenUtils {
 	}
 	
 	public static Token GetToken(String address) {
+		address = address.toLowerCase();
+		
 		for (Token t : Token.values()) {
 			if (GetAddress(t).equals(address)) {
 				return t;
@@ -65,6 +69,10 @@ public class TokenUtils {
 		int percentage = (int) (rawRateChangePercentage * 100);
 		
 		return percentage;
+	}
+	
+	public static String GetHumanReadableTokenValue(double value) {
+		return NumberFormat.getNumberInstance(Locale.US).format(value);
 	}
 	
 	public static double GetHumanReadableRate(double rawRate) {
