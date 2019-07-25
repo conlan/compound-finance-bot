@@ -75,13 +75,12 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			message.append(symbol);
 			message.append(" - ");
 			
-			// show borrow rate						
-			message.append("Borrow ");
+			// show borrow rate
 			message.append(currentBorrowRate);
 			message.append("%");
 			
 			// show supply rate
-			message.append(", Supply ");			
+			message.append(" / ");			
 			message.append(currentSupplyRate);
 			message.append("%");					
 
@@ -92,8 +91,8 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		}
 		
 		// insert this at the beginning of the message now that we know the latest block number
-		message.insert(0, "Rates (APR) as of block " + latestBlock + ":\n\n");
-
+		message.insert(0, "Borrow / Supply Rates (APR) as of block " + latestBlock + ":\n\n");
+		
 		// Queue up a task to tweet this message
 		Queue queue = QueueFactory.getDefaultQueue();		
 		queue.add(TaskOptions.Builder.withUrl("/tweet").param("status", message.toString()));

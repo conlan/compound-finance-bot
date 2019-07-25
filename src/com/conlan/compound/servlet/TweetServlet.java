@@ -24,6 +24,8 @@ public class TweetServlet extends HttpServlet {
 		Twitter twitter = TwitterFactory.getSingleton();
 		
 		try {
+			log.info("Attempting to tweet:\n\n" + statusContent);
+			
 			Status status = twitter.updateStatus(statusContent);
 			
 			log.info(status.getText());
