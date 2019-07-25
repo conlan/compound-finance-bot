@@ -1,5 +1,6 @@
 package com.conlan.compound.serialization;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.conlan.compound.TokenUtils;
@@ -28,15 +29,18 @@ public class LiquidationEventData {
 			params.add(param);			
 		}
 		
+		// borrow
 		liquidation.assetBorrow = TokenUtils.GetToken(Web3Service.ToAddress(params.get(1)));
 		
-		int decimals = TokenUtils.GetDecimals(liquidation.assetBorrow);		
-		liquidation.amountRepaid = new Double(Web3Service.ToNumeric(params.get(4)) / Math.pow(10, decimals));
+		BigDecimal decimals = new BigDecimal("10").pow(TokenUtils.GetDecimals(liquidation.assetBorrow));
+		liquidation.amountRepaid = Web3Service.ToNumeric(params.get(4)).divide(decimals).doubleValue();
 		
+		// collateral
 		liquidation.assetCollateral = TokenUtils.GetToken(Web3Service.ToAddress(params.get(7)));
 		
-		decimals = TokenUtils.GetDecimals(liquidation.assetCollateral);
-		liquidation.amountSeized = new Double(Web3Service.ToNumeric(params.get(10)) / Math.pow(10, decimals));
+		decimals = new BigDecimal("10").pow(TokenUtils.GetDecimals(liquidation.assetCollateral));
+		liquidation.amountSeized = Web3Service.ToNumeric(params.get(10)).divide(decimals).doubleValue();
+		
 		
 		return liquidation;
 	}

@@ -19,6 +19,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ReportLiquidationServlet extends HttpServlet {
 	public static final Logger log = Logger.getLogger(ReportLiquidationServlet.class.getName());
@@ -35,10 +38,10 @@ public class ReportLiquidationServlet extends HttpServlet {
 		List<Entity> results = datastore.prepare(q).asList(FetchOptions.Builder.withDefaults());
 		
 		if (results.size() == 0) {
-			Entity tom = new Entity("block_info");
-			tom.setUnindexedProperty("last_fetched_block", 7015141);
-			datastore.put(tom);
-			
+//			Entity tom = new Entity("block_info");
+//			tom.setUnindexedProperty("last_fetched_block", 7014797);
+//			datastore.put(tom);
+//			
 			Web3Service.log.warning("No block infos found! Bailing.");
 			return;
 		}
@@ -98,7 +101,9 @@ public class ReportLiquidationServlet extends HttpServlet {
 		}
 		
 		if (shouldTweet) {
-			log.warning(sb.toString().trim());	
+			// Queue up a task to tweet this message
+			Queue queue = QueueFactory.getDefaultQueue();		
+			queue.add(TaskOptions.Builder.withUrl("/tweet").param("status", sb.toString()));
 		}
 	}
 }

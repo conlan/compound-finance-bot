@@ -18,28 +18,36 @@ public class TokenUtils {
 	public static Hashtable<Token, Integer> tokenDecimalMap = new Hashtable<Token, Integer>();
 	
 	static {
-		tokenSymbolMap.put(Token.WETH, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase());
-		tokenDecimalMap.put(Token.WETH, 18);
+		tokenSymbolMap.put(Token.ETH, "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5".toLowerCase());
+		tokenDecimalMap.put(Token.ETH, 18);
 		
-		tokenSymbolMap.put(Token.BAT, "0x0D8775F648430679A709E98d2b0Cb6250d2887EF".toLowerCase());
+		tokenSymbolMap.put(Token.BAT, "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e".toLowerCase());
 		tokenDecimalMap.put(Token.BAT, 18);
 		
-		tokenSymbolMap.put(Token.ZRX, "0xE41d2489571d322189246DaFA5ebDe1F4699F498".toLowerCase());
+		tokenSymbolMap.put(Token.ZRX, "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407".toLowerCase());
 		tokenDecimalMap.put(Token.ZRX, 18);
 		
-		tokenSymbolMap.put(Token.REP, "0x1985365e9f78359a9B6AD760e32412f4a445E862".toLowerCase());
+		tokenSymbolMap.put(Token.REP, "0x158079ee67fce2f58472a96584a73c7ab9ac95c1".toLowerCase());
 		tokenDecimalMap.put(Token.REP, 18);
 		
-		tokenSymbolMap.put(Token.DAI, "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359".toLowerCase());
+		tokenSymbolMap.put(Token.DAI, "0xf5dce57282a584d2746faf1593d3121fcac444dc".toLowerCase());
 		tokenDecimalMap.put(Token.DAI, 18);
+		
+		tokenSymbolMap.put(Token.WBTC, "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4".toLowerCase());
+		tokenDecimalMap.put(Token.WBTC, 18);
+		
+		tokenSymbolMap.put(Token.USDC, "0x39aa39c021dfbae8fac545936693ac917d5e7563".toLowerCase());
+		tokenDecimalMap.put(Token.WBTC, 18);
 	}
 	
 	public enum Token {
-		WETH,
+		ETH,
 		DAI,
+		USDC,
+		WBTC,
 		BAT,
 		ZRX,
-		REP,		
+		REP			
 	}
 	
 	public static Token GetToken(String address) {
@@ -50,7 +58,7 @@ public class TokenUtils {
 				return t;
 			}
 		}
-		return Token.WETH;
+		return Token.ETH;
 	}
 	
 	public static String GetAddress(Token token) {

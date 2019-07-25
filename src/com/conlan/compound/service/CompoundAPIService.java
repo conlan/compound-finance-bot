@@ -16,7 +16,7 @@ public class CompoundAPIService {
 	
 	public static final String API_KEY = System.getProperty("COMPOUND_API_KEY");
 	
-	public static final String ENDPOINT_MARKET_HISTORY = "https://api.compound.finance/api/market_history/v1/graph"; 
+	public static final String ENDPOINT_MARKET_HISTORY = "https://api.compound.finance/api/v2/market_history/graph"; 
 	
 	/**
 	 * Return the market history for a given asset.

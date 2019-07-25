@@ -81,7 +81,7 @@ public class InterestRateRefreshServlet extends HttpServlet {
 			message.append("%");
 			
 			// show supply rate
-			message.append(" - Supply ");			
+			message.append(", Supply ");			
 			message.append(currentSupplyRate);
 			message.append("%");					
 

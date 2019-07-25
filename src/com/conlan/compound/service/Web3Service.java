@@ -3,6 +3,7 @@ package com.conlan.compound.service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -106,7 +107,7 @@ public class Web3Service {
 			
 			Gson gson = new Gson();	
 			
-			log.warning(gson.toJson(jsonObj));
+			log.info(gson.toJson(jsonObj));
 
 			OutputStreamWriter wr = new OutputStreamWriter(hc.getOutputStream());
 			wr.write(gson.toJson(jsonObj));
@@ -157,27 +158,38 @@ public class Web3Service {
 		return "0x" + Hex.encodeHexString(bytes);
 	}
 	
-	public static Long ToNumeric(String hex) {
+	public static BigDecimal ToNumeric(String hex) {		
 		try {
 			byte[] bytes = Hex.decodeHex(hex.toCharArray());
 			
 			BigInteger numericValue = new BigInteger(bytes);
 			
-			return numericValue.longValue();
+			return new BigDecimal(numericValue);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return 0L;
+			return new BigDecimal("0");
 		}
 	}
 	
-	public static String ToAddress(String hex) {
-		
+	public static String ToAddress(String hex) {		
 		try {
 			byte[] bytes = Hex.decodeHex(hex.toCharArray());
 			
 			BigInteger numericValue = new BigInteger(bytes);
+			
+			StringBuilder address = new StringBuilder(numericValue.toString(16));
+			
+			int addressLength = address.length();
+			// zero pad the address
+			while (addressLength < 40) {
+				address.insert(0, "0");
+				
+				addressLength++;
+			}			
 
-			return "0x" + numericValue.toString(16);
+			address.insert(0, "0x");
+			
+			return address.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -10,4 +10,9 @@
     <description>scheduled rate delta detection job</description>
     <schedule>every 77 minutes</schedule>
   </cron>
+  <!--  <cron>
+    <url>/reportliquidations</url>
+    <description>scheduled liquidation recap job</description>
+    <schedule>every 13 hours</schedule>
+  </cron>-->
 </cronentries>
