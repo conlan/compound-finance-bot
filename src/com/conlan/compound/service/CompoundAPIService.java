@@ -49,13 +49,18 @@ public class CompoundAPIService {
 		urlBuilder.append("&num_buckets=");
 		urlBuilder.append(numPreviousHours); // 1 bucket per hour
 		
-		MarketHistoryObject marketHistory = CompoundAPIService.Get(urlBuilder.toString(), MarketHistoryObject.class);
+		int NUM_RETRIES = 2;
 		
-		if (marketHistory != null) {
-			marketHistory.SetToken(token);
+		for (int i = 0; i < NUM_RETRIES; i++) {
+			MarketHistoryObject marketHistory = CompoundAPIService.Get(urlBuilder.toString(), MarketHistoryObject.class);
+		
+			if (marketHistory != null) {
+				marketHistory.SetToken(token);
+
+				return marketHistory;
+			}
 		}
-		
-		return marketHistory;
+		return null;			
 	}
 	
 	public static <T>T Get(String url, Class<T> returnClass) {		

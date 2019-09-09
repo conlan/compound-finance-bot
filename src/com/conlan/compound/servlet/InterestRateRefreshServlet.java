@@ -34,10 +34,8 @@ public class InterestRateRefreshServlet extends HttpServlet {
 		for (Token token : Token.values()) {
 			MarketHistoryObject marketHistory = CompoundAPIService.GetAssetMarketHistory(token, numHours);
 			
-			if (marketHistory != null) {
+			if ((marketHistory != null) && (marketHistory.LatestBlockNumber() > 0L)) {
 				histories.add(marketHistory);
-			} else {
-				return;
 			}			
 		}
 		
